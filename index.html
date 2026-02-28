@@ -118,7 +118,7 @@
 		corner.textContent = "#";
 		board.appendChild(corner);
 
-		for (let col = 1; col <= size; col++) {
+		for (let col = size; col >= 1; col--) {
 			const label = document.createElement("div");
 			label.className = "label";
 			label.textContent = col;

@@ -113,6 +113,25 @@
 
 		const board = document.getElementById("board");
 
+		const moveByArrow = (fromRow, fromCol, rowStep, colStep) => {
+			let targetRow = fromRow + rowStep;
+			let targetCol = fromCol + colStep;
+
+			while (targetRow >= 1 && targetRow <= size && targetCol >= 1 && targetCol <= size) {
+				if (!blocked.has(`${targetRow}-${targetCol}`)) {
+					const nextCell = board.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
+					if (nextCell) {
+						nextCell.focus();
+						nextCell.select();
+					}
+					return;
+				}
+
+				targetRow += rowStep;
+				targetCol += colStep;
+			}
+		};
+
 		const corner = document.createElement("div");
 		corner.className = "corner";
 		corner.textContent = "#";
@@ -149,12 +168,39 @@
 				input.inputMode = "text";
 				input.autocomplete = "off";
 				input.spellcheck = false;
+				input.dataset.row = row;
+				input.dataset.col = col;
 				input.setAttribute("aria-label", `خانة الصف ${row} العمود ${col}`);
 
 				input.addEventListener("input", (event) => {
 					const value = event.target.value;
 					const arabicChars = [...value].filter((ch) => /[\u0600-\u06FF]/.test(ch));
 					event.target.value = arabicChars.length ? arabicChars[arabicChars.length - 1] : "";
+				});
+
+				input.addEventListener("keydown", (event) => {
+					const rowPos = Number(event.currentTarget.dataset.row);
+					const colPos = Number(event.currentTarget.dataset.col);
+
+					if (event.key === "ArrowUp") {
+						event.preventDefault();
+						moveByArrow(rowPos, colPos, -1, 0);
+					}
+
+					if (event.key === "ArrowDown") {
+						event.preventDefault();
+						moveByArrow(rowPos, colPos, 1, 0);
+					}
+
+					if (event.key === "ArrowLeft") {
+						event.preventDefault();
+						moveByArrow(rowPos, colPos, 0, -1);
+					}
+
+					if (event.key === "ArrowRight") {
+						event.preventDefault();
+						moveByArrow(rowPos, colPos, 0, 1);
+					}
 				});
 
 				board.appendChild(input);
